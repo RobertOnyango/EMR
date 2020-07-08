@@ -63,7 +63,7 @@ class PatientController extends Controller
             
             try {
                 //Get all applications 
-                $patients = Patient::where('age', 'Female')->get()->count();
+                $patients = Patient::where('gender', 'Female')->get()->count();
 
                 return response()->json($patients, 201);
                 
