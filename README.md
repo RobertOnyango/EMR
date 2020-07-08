@@ -28,7 +28,7 @@ A simple Electronic Medical example made with ReactJS and Laravel. Add users fro
 -   create a new .env file and copy content from .env.example and update the values:
 
 ```
-    DB_DATABASE (your local database, i.e. "emr")
+DB_DATABASE (your local database, i.e. "emr")
 DB_USERNAME (your local db username, i.e. "root")
 DB_PASSWORD (your local db password, i.e. "")
 ```
