@@ -67,3 +67,4 @@ You can log in these credentials:
 
 Email: `doctor1@gmail.com`
 Password: `password`
+# EMR
