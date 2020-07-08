@@ -21,7 +21,7 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-Route::view('/{path?}', 'HomeController')
+Route::view('/{path?}', 'home')
      ->where('path', '.*')
      ->name('react');
 
