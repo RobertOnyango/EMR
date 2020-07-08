@@ -22,14 +22,14 @@ class DiagnosisController extends Controller
 
     public function getAdmissions(){
 
-        $admissions = Diagnosis::where('admission', true)->count();
+        $admissions = Diagnosis::where('admission', "yes")->count();
 
         return response()->json($admissions, 200);
     }
 
     public function getNotAdmitted(){
 
-        $releases = Diagnosis::where('admission', false)->count();
+        $releases = Diagnosis::where('admission', "no")->count();
 
         return response()->json($releases, 200);
     }

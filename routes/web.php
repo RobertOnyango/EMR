@@ -21,6 +21,10 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+Route::view('/{path?}', 'HomeController')
+     ->where('path', '.*')
+     ->name('react');
+
 // Catches all other web routes.
 Route::get('{slug}', function () {
     return view('index');

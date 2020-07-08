@@ -1,45 +1,24 @@
 import React, { Component } from "react";
 import { Doughnut, Pie } from "react-chartjs-2";
 import axios from "axios";
+import { Link } from "react-router-dom";
+import DoughnutChart from "./charts.js/DoughnutChart";
+import PieChart from "./charts.js/PieChart";
 
 class Home extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            //Flags
+            init: 0,
+            foo: 0,
+
             patients: "",
             male: "",
             female: "",
 
-            antibiotics: "",
-            painkillers: "",
-            supplements: "",
-
-            admitted: "",
-            released: "",
-
-            //Medicines
-            doughnutChart: {
-                labels: ["Antibiotics", "Painkillers", "Supplements"],
-                datasets: [
-                    {
-                        data: [3, 2, 1],
-                        backgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"],
-                        hoverBackgroundColor: ["#FF6384", "#36A2EB", "#FFCE56"]
-                    }
-                ]
-            },
-
-            //Admissions
-            pieChart: {
-                labels: ["Admitted", "Released"],
-                datasets: [
-                    {
-                        data: [3, 5],
-                        backgroundColor: ["#FF6384", "#36A2EB"],
-                        hoverBackgroundColor: ["#FF6384", "#36A2EB"]
-                    }
-                ]
-            }
+            drugsData: {},
+            admissionsData: {}
         };
     }
 
@@ -48,13 +27,9 @@ class Home extends Component {
         this.getMalePatients();
         this.getFemalePatients();
 
-        //this.getMedicines();
-        this.getAntibioticMedicines();
-        this.getPainkillerMedicines();
-        this.getSupplementMedicines();
+        this.getMedicines();
 
-        this.getAdmittedPatients();
-        this.getReleasedPatients();
+        this.getAdmissions();
     }
 
     getPatients() {
@@ -83,52 +58,62 @@ class Home extends Component {
             });
     }
 
-    getAdmittedPatients() {
+    getAdmissions() {
         axios
-            .get(`http://127.0.0.1:8000/api/diagnosis/admitted`)
+            .all([
+                axios.get(`http://127.0.0.1:8000/api/diagnosis/admitted`),
+                axios.get(`http://127.0.0.1:8000/api/diagnosis/released`)
+            ])
             .then(response => {
+                console.log(response[0].data);
                 this.setState({
-                    admitted: response.data
+                    admissionsData: {
+                        labels: ["Admitted", "Released"],
+                        datasets: [
+                            {
+                                data: [response[0].data, response[1].data],
+                                backgroundColor: ["#FF6384", "#36A2EB"],
+                                hoverBackgroundColor: ["#FF6384", "#36A2EB"]
+                            }
+                        ]
+                    },
+                    init: 1
                 });
             });
     }
 
-    getReleasedPatients() {
+    getMedicines() {
         axios
-            .get(`http://127.0.0.1:8000/api/diagnosis/released`)
+            .all([
+                axios.get(`http://127.0.0.1:8000/api/medicines/antibiotics`),
+                axios.get(`http://127.0.0.1:8000/api/medicines/painkillers`),
+                axios.get(`http://127.0.0.1:8000/api/medicines/supplements`)
+            ])
             .then(response => {
                 this.setState({
-                    released: response.data
-                });
-            });
-    }
-
-    getAntibioticMedicines() {
-        axios
-            .get(`http://127.0.0.1:8000/api/medicines/antibiotics`)
-            .then(response => {
-                this.setState({
-                    antibiotics: response.data
-                });
-            });
-    }
-
-    getPainkillerMedicines() {
-        axios
-            .get(`http://127.0.0.1:8000/api/medicines/painkillers`)
-            .then(response => {
-                this.setState({
-                    painkillers: response.data
-                });
-            });
-    }
-
-    getSupplementMedicines() {
-        axios
-            .get(`http://127.0.0.1:8000/api/medicines/supplements`)
-            .then(response => {
-                this.setState({
-                    supplements: response.data
+                    drugsData: {
+                        labels: ["Antibiotics", "Painkillers", "Supplements"],
+                        datasets: [
+                            {
+                                data: [
+                                    response[0].data,
+                                    response[1].data,
+                                    response[2].data
+                                ],
+                                backgroundColor: [
+                                    "#FF6384",
+                                    "#36A2EB",
+                                    "#FFCE56"
+                                ],
+                                hoverBackgroundColor: [
+                                    "#FF6384",
+                                    "#36A2EB",
+                                    "#FFCE56"
+                                ]
+                            }
+                        ]
+                    },
+                    foo: 1
                 });
             });
     }
@@ -136,58 +121,100 @@ class Home extends Component {
     render() {
         return (
             <React.Fragment>
-                <div className="container">
-                    <h2>Patients Numerics:</h2>
-                    <div className="row">
-                        <div className="col-lg-4 col-md-4">
-                            <div className="card" style={{ width: "18rem" }}>
-                                <div className="card-header">
-                                    <h4>Patients Seen</h4>
-                                </div>
-                                <div className="card-body">
-                                    <div className="card-text">
-                                        <h5>{this.state.patients}</h5>
+                {this.state.init && this.state.foo ? (
+                    <div className="container">
+                        <div className="row">
+                            <div className="col-lg-3 col-md-3">
+                                <div
+                                    className="card"
+                                    style={{ width: "15rem" }}
+                                >
+                                    <div
+                                        className="card-header"
+                                        style={{ textAlign: "center" }}
+                                    >
+                                        <h4>Total Patients</h4>
+                                    </div>
+                                    <div className="card-body">
+                                        <div
+                                            className="card-text"
+                                            style={{ textAlign: "center" }}
+                                        >
+                                            <h5>{this.state.patients}</h5>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="col-lg-4 col-md-4">
-                            <div className="card" style={{ width: "18rem" }}>
-                                <div className="card-header">
-                                    <h4>Male Patients</h4>
-                                </div>
-                                <div className="card-body">
-                                    <div className="card-text">
-                                        <h5>{this.state.male}</h5>
+                            <div className="col-lg-3 col-md-3">
+                                <div
+                                    className="card"
+                                    style={{ width: "15rem" }}
+                                >
+                                    <div
+                                        className="card-header"
+                                        style={{ textAlign: "center" }}
+                                    >
+                                        <h4>Male Patients</h4>
+                                    </div>
+                                    <div className="card-body">
+                                        <div
+                                            className="card-text"
+                                            style={{ textAlign: "center" }}
+                                        >
+                                            <h5>{this.state.male}</h5>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className="col-lg-4 col-md-4">
-                            <div className="card" style={{ width: "18rem" }}>
-                                <div className="card-header">
-                                    <h4>Female Patients</h4>
-                                </div>
-                                <div className="card-body">
-                                    <div className="card-text">
-                                        <h5>{this.state.female}</h5>
+                            <div className="col-lg-3 col-md-3">
+                                <div
+                                    className="card"
+                                    style={{ width: "15rem" }}
+                                >
+                                    <div
+                                        className="card-header"
+                                        style={{ textAlign: "center" }}
+                                    >
+                                        <h4>Female Patients</h4>
+                                    </div>
+                                    <div className="card-body">
+                                        <div
+                                            className="card-text"
+                                            style={{ textAlign: "center" }}
+                                        >
+                                            <h5>{this.state.female}</h5>
+                                        </div>
                                     </div>
                                 </div>
+                            </div>
+                            <div className="col-lg-3 col-md-3">
+                                <Link to="/patient">
+                                    <button
+                                        type="button"
+                                        className="btn btn-primary"
+                                    >
+                                        Add New Patient
+                                    </button>
+                                </Link>
+                            </div>
+                        </div>
+                        <br />
+                        <div className="row">
+                            <div className="col-lg-6 col-md-6">
+                                <DoughnutChart
+                                    drugsData={this.state.drugsData}
+                                />
+                            </div>
+                            <div className="col-lg-6 col-md-6">
+                                <PieChart
+                                    admissionsData={this.state.admissionsData}
+                                />
                             </div>
                         </div>
                     </div>
-                    <br />
-                    <div className="row">
-                        <div className="col-lg-6 col-md-6">
-                            <h2>Drugs administered:</h2>
-                            <Doughnut data={this.state.doughnutChart} />
-                        </div>
-                        <div className="col-lg-6 col-md-6">
-                            <h2>Admissions</h2>
-                            <Pie data={this.state.pieChart} />
-                        </div>
-                    </div>
-                </div>
+                ) : (
+                    <div>Loading...</div>
+                )}
             </React.Fragment>
         );
     }
