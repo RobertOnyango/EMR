@@ -1,6 +1,6 @@
 # Laravel-React EMR
 
-A simple Electronic Medical example made with ReactJS and Laravel. Add users from DB if needed.
+A simple Electronic Medical Records example made with ReactJS and Laravel. Add users from DB if needed.
 
 ### Prequisites
 
